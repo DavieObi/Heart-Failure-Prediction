@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Failure Prediction</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .container {
+            max-width: 800px;
+        }
+        input[type="number"], select {
+            border: 1px solid #cbd5e0;
+            border-radius: 0.375rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            font-size: 1rem;
+            line-height: 1.5;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+        .btn-predict {
+            background-color: #2563eb;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .btn-predict:hover {
+            background-color: #1d4ed8;
+        }
+        .result-box {
+            background-color: #e0f2fe;
+            border: 1px solid #90cdf4;
+            color: #2b6cb0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1.5rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+        .result-box.positive {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #dc2626;
+        }
+        .result-box.negative {
+            background-color: #d1fae5;
+            border-color: #34d399;
+            color: #047857;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="container bg-white shadow-xl rounded-xl p-8 md:p-10">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Heart Failure Prediction</h1>
+
+        <form id="predictionForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-group">
+                <label for="age" class="block text-gray-700 text-sm font-medium mb-2">Age:</label>
+                <input type="number" id="age" name="age" required min="0" class="rounded-md">
+            </div>
+            <div class="form-group">
+                <label for="anaemia" class="block text-gray-700 text-sm font-medium mb-2">Anaemia:</label>
+                <select id="anaemia" name="anaemia" required class="rounded-md">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="cpk" class="block text-gray-700 text-sm font-medium mb-2">Creatinine Phosphokinase (CPK):</label>
+                <input type="number" id="cpk" name="cpk" required min="0" class="rounded-md">
+            </div>
+            <div class="form-group">
+                <label for="diabetes" class="block text-gray-700 text-sm font-medium mb-2">Diabetes:</label>
+                <select id="diabetes" name="diabetes" required class="rounded-md">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="ejection" class="block text-gray-700 text-sm font-medium mb-2">Ejection Fraction:</label>
+                <input type="number" id="ejection" name="ejection" required min="0" class="rounded-md">
+            </div>
+            <div class="form-group">
+                <label for="bp" class="block text-gray-700 text-sm font-medium mb-2">High Blood Pressure:</label>
+                <select id="bp" name="bp" required class="rounded-md">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="platelets" class="block text-gray-700 text-sm font-medium mb-2">Platelets:</label>
+                <input type="number" id="platelets" name="platelets" required min="0" class="rounded-md">
+            </div>
+            <div class="form-group">
+                <label for="creatinine" class="block text-gray-700 text-sm font-medium mb-2">Serum Creatinine:</label>
+                <input type="number" id="creatinine" name="creatinine" step="0.01" required min="0" class="rounded-md">
+            </div>
+            <div class="form-group">
+                <label for="sodium" class="block text-gray-700 text-sm font-medium mb-2">Serum Sodium:</label>
+                <input type="number" id="sodium" name="sodium" required min="0" class="rounded-md">
+            </div>
+            <div class="form-group">
+                <label for="sex" class="block text-gray-700 text-sm font-medium mb-2">Sex:</label>
+                <select id="sex" name="sex" required class="rounded-md">
+                    <option value="0">Female</option>
+                    <option value="1">Male</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="smoking" class="block text-gray-700 text-sm font-medium mb-2">Smoking:</label>
+                <select id="smoking" name="smoking" required class="rounded-md">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="md:col-span-2 flex justify-center mt-4">
+                <button type="submit" class="btn-predict rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Predict Heart Failure</button>
+            </div>
+        </form>
+
+        <div id="result" class="result-box hidden">
+            <!-- Prediction result will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const form = event.target;
+            const data = {
+                age: parseFloat(form.age.value),
+                anaemia: parseInt(form.anaemia.value),
+                cpk: parseFloat(form.cpk.value),
+                diabetes: parseInt(form.diabetes.value),
+                ejection: parseFloat(form.ejection.value),
+                bp: parseInt(form.bp.value),
+                platelets: parseFloat(form.platelets.value),
+                creatinine: parseFloat(form.creatinine.value),
+                sodium: parseFloat(form.sodium.value),
+                sex: parseInt(form.sex.value),
+                smoking: parseInt(form.smoking.value)
+            };
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.classList.remove('positive', 'negative'); // Clear previous styles
+            resultDiv.textContent = 'Predicting...';
+            resultDiv.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                if (result.prediction === 1) {
+                    resultDiv.textContent = 'Prediction: High Risk of Heart Failure';
+                    resultDiv.classList.add('positive');
+                } else {
+                    resultDiv.textContent = 'Prediction: Low Risk of Heart Failure';
+                    resultDiv.classList.add('negative');
+                }
+            } catch (error) {
+                console.error('Error during prediction:', error);
+                resultDiv.textContent = 'Error: Could not get prediction. Please try again.';
+                resultDiv.classList.add('positive'); // Use positive style for error
+            }
+        });
+    </script>
+</body>
+</html>
